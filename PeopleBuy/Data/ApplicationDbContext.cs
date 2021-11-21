@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PeopleBuy.Models;
 
 namespace PeopleBuy.Data
 {
@@ -9,5 +10,8 @@ namespace PeopleBuy.Data
             : base(options)
         {
         }
+        public DbSet<PeopleBuy.Models.Login> Login { get; set; }
+        public DbSet<PeopleBuy.Models.Categoria> Categoria { get; set; }
+        public DbSet<PeopleBuy.Models.SubCategoria> SubCategoria { get; set; }
     }
 }
