@@ -13,5 +13,7 @@ namespace PeopleBuy.Data
         public DbSet<PeopleBuy.Models.Login> Login { get; set; }
         public DbSet<PeopleBuy.Models.Categoria> Categoria { get; set; }
         public DbSet<PeopleBuy.Models.SubCategoria> SubCategoria { get; set; }
+        public DbSet<PeopleBuy.Models.Fisica> Fisica { get; set; }
+        public DbSet<PeopleBuy.Models.Juridica> Juridica { get; set; }
     }
 }
