@@ -17,11 +17,14 @@
             var dLatitude = (eLatitudeRadians - sLatitudeRadians) * radiansOverDegrees;
 
             // var result1 = dLatitude * dLatitude + Math.Cos(sLatitude) * Math.Cos(eLatitude) * dLongitude * dLongitude;
+            //calculo da distância levando em conta as coordenadas levando em consideração os graus de latitude e longitude
             var result1 = Math.Pow(Math.Sin(dLatitude), 2.0) +
                            Math.Cos(sLatitudeRadians) * Math.Cos(eLatitudeRadians) *
                            Math.Pow(Math.Sin(dLongitude), 2.0);
 
             // Using 3956 as the number of miles around the earth
+            //calculo utilizando a circuferência da terra para calcular o valor exato da distância entre as posições para futura
+            //verificação de distância passada por parâmetro. 
             var result2 = (6357 * 2.0 *
                           Math.Atan2(Math.Sqrt(result1), Math.Sqrt(1.0 - result1))) * 1000;
 
