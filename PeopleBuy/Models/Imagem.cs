@@ -9,6 +9,7 @@ namespace PeopleBuy.Models
         [Required]
         [Display(Name = "Nome da imagem")]
         public String? Nome { get; set; }
-        public String? Extensao {get;set;}
+        public String? Extensao { get; set; }
+        public String? CaminhoArquivo { get; set; }
     }
 }
