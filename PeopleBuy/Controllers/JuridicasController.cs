@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeopleBuy.Data;
 using PeopleBuy.Models;
+using PeopleBuy.Models.Validadores;
 
 namespace PeopleBuy.Controllers
 {
+    /// <summary>
+    /// Gerencia o cadastro de pessoas jurídicas (empresas) que publicam ofertas na plataforma.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class JuridicasController : ControllerBase
@@ -21,36 +21,54 @@ namespace PeopleBuy.Controllers
             _context = context;
         }
 
-        // GET: api/Juridicas
+        /// <summary>Retorna todos os cadastros de pessoas jurídicas.</summary>
+        /// <response code="200">Lista de pessoas jurídicas</response>
+        /// <response code="401">Não autenticado</response>
+        [Authorize]
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Juridica>), 200)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<IEnumerable<Juridica>>> GetJuridica()
         {
             return await _context.Juridica.ToListAsync();
         }
 
-        // GET: api/Juridicas/5
+        /// <summary>Retorna uma pessoa jurídica pelo ID.</summary>
+        /// <param name="id">ID do cadastro</param>
+        /// <response code="200">Empresa encontrada</response>
+        /// <response code="401">Não autenticado</response>
+        /// <response code="404">Não encontrada</response>
+        [Authorize]
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Juridica), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<ActionResult<Juridica>> GetJuridica(int id)
         {
             var juridica = await _context.Juridica.FindAsync(id);
-
-            if (juridica == null)
-            {
-                return NotFound();
-            }
-
+            if (juridica == null) return NotFound();
             return juridica;
         }
 
-        // PUT: api/Juridicas/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>Atualiza o cadastro de uma pessoa jurídica.</summary>
+        /// <param name="id">ID do cadastro</param>
+        /// <param name="juridica">Dados atualizados</param>
+        /// <response code="204">Atualizado com sucesso</response>
+        /// <response code="400">CNPJ inválido ou ID incorreto</response>
+        /// <response code="401">Não autenticado</response>
+        /// <response code="404">Não encontrada</response>
+        [Authorize]
         [HttpPut("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> PutJuridica(int id, Juridica juridica)
         {
-            if (id != juridica.ID)
-            {
-                return BadRequest();
-            }
+            if (id != juridica.ID) return BadRequest();
+
+            if (juridica.CNPJ != null && !CNPJ.IsCnpj(juridica.CNPJ))
+                return BadRequest(new { message = "CNPJ inválido." });
 
             _context.Entry(juridica).State = EntityState.Modified;
 
@@ -60,43 +78,50 @@ namespace PeopleBuy.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!JuridicaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                if (!JuridicaExists(id)) return NotFound();
+                throw;
             }
 
             return NoContent();
         }
 
-        // POST: api/Juridicas
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>Cadastra uma nova empresa.</summary>
+        /// <param name="juridica">Dados da empresa</param>
+        /// <response code="201">Cadastro criado com sucesso</response>
+        /// <response code="400">CNPJ inválido</response>
+        /// <response code="401">Não autenticado</response>
+        [Authorize]
         [HttpPost]
+        [ProducesResponseType(typeof(Juridica), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<ActionResult<Juridica>> PostJuridica(Juridica juridica)
         {
+            if (juridica.CNPJ != null && !CNPJ.IsCnpj(juridica.CNPJ))
+                return BadRequest(new { message = "CNPJ inválido." });
+
             _context.Juridica.Add(juridica);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetJuridica", new { id = juridica.ID }, juridica);
+            return CreatedAtAction(nameof(GetJuridica), new { id = juridica.ID }, juridica);
         }
 
-        // DELETE: api/Juridicas/5
+        /// <summary>Remove o cadastro de uma empresa.</summary>
+        /// <param name="id">ID do cadastro</param>
+        /// <response code="204">Removido com sucesso</response>
+        /// <response code="401">Não autenticado</response>
+        /// <response code="404">Não encontrada</response>
+        [Authorize]
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteJuridica(int id)
         {
             var juridica = await _context.Juridica.FindAsync(id);
-            if (juridica == null)
-            {
-                return NotFound();
-            }
+            if (juridica == null) return NotFound();
 
             _context.Juridica.Remove(juridica);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 

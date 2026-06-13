@@ -1,0 +1,300 @@
+### PeopleBuy API - Exemplos de Requisições
+### Configuração: substitua {{baseUrl}} e {{token}} conforme necessário
+
+@baseUrl = https://localhost:7171
+@token = SEU_TOKEN_JWT_AQUI
+
+### ================================================================
+### AUTENTICAÇÃO
+### ================================================================
+
+### Cadastrar novo usuário (pessoa física)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "usuario": "joao.silva@exemplo.com",
+  "senha": "senhaSegura123",
+  "tipoLogin": "Fisica"
+}
+
+###
+
+### Cadastrar nova empresa
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "usuario": "empresa@exemplo.com.br",
+  "senha": "senhaEmpresa456",
+  "tipoLogin": "Juridica"
+}
+
+###
+
+### Login e obtenção do JWT
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usuario": "joao.silva@exemplo.com",
+  "senha": "senhaSegura123"
+}
+
+### ================================================================
+### CATEGORIAS (público)
+### ================================================================
+
+### Listar todas as categorias
+GET {{baseUrl}}/api/categorias
+
+###
+
+### Buscar categoria por ID
+GET {{baseUrl}}/api/categorias/1
+
+###
+
+### Criar categoria (requer auth)
+POST {{baseUrl}}/api/categorias
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Alimentos e Bebidas"
+}
+
+### ================================================================
+### SUBCATEGORIAS (público)
+### ================================================================
+
+### Listar subcategorias
+GET {{baseUrl}}/api/subcategorias
+
+###
+
+### Criar subcategoria (requer auth)
+POST {{baseUrl}}/api/subcategorias
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Frutas e Verduras",
+  "categoriaId": 1
+}
+
+### ================================================================
+### OFERTAS (leitura pública, escrita requer auth)
+### ================================================================
+
+### Listar todas as ofertas
+GET {{baseUrl}}/api/ofertas
+
+###
+
+### Buscar oferta por ID
+GET {{baseUrl}}/api/ofertas/1
+
+###
+
+### Buscar ofertas próximas (São Paulo - centro)
+GET {{baseUrl}}/api/ofertas/proximas?latitude=-23.5505&longitude=-46.6333&raioKm=5
+
+###
+
+### Criar oferta (requer auth)
+POST {{baseUrl}}/api/ofertas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Cesta de Frutas Orgânicas",
+  "descricao": "Cesta com 5kg de frutas orgânicas selecionadas",
+  "preco": 49.90,
+  "unidade": "cesta",
+  "dataInicio": "2024-01-01T00:00:00",
+  "dataFim": "2024-12-31T23:59:59",
+  "flagAtivo": true,
+  "categoriaId": 1,
+  "idJuridica": 1
+}
+
+###
+
+### Atualizar oferta (requer auth)
+PUT {{baseUrl}}/api/ofertas/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id": 1,
+  "nome": "Cesta de Frutas Premium",
+  "preco": 59.90,
+  "flagAtivo": true,
+  "categoriaId": 1,
+  "idJuridica": 1
+}
+
+###
+
+### Remover oferta (requer auth)
+DELETE {{baseUrl}}/api/ofertas/1
+Authorization: Bearer {{token}}
+
+### ================================================================
+### OFERTAS DIÁRIAS (leitura pública, escrita requer auth)
+### ================================================================
+
+### Listar ofertas diárias
+GET {{baseUrl}}/api/ofertasdiarias
+
+###
+
+### Buscar ofertas diárias próximas (Rio de Janeiro - centro)
+GET {{baseUrl}}/api/ofertasdiarias/proximas?latitude=-22.9068&longitude=-43.1729&raioKm=10
+
+###
+
+### Criar oferta diária (requer auth)
+POST {{baseUrl}}/api/ofertasdiarias
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nome": "Açaí na Tigela",
+  "descricao": "Açaí batido com granola e banana",
+  "preco": 18.00,
+  "unidade": "porção",
+  "dataInicio": "2024-01-01T00:00:00",
+  "dataFim": "2024-12-31T23:59:59",
+  "flagAtivo": true,
+  "categoriaId": 1,
+  "diaSemana": "Segunda a Sexta",
+  "cep": "20040-020",
+  "logradouro": "Av. Rio Branco",
+  "numero": "156",
+  "complemento": "Loja A",
+  "estado": "RJ",
+  "cidade": "Rio de Janeiro",
+  "bairro": "Centro",
+  "longitude": -43.1729,
+  "latitude": -22.9068,
+  "nomeComercio": "Açaí do João"
+}
+
+### ================================================================
+### IMAGENS
+### ================================================================
+
+### Listar imagens
+GET {{baseUrl}}/api/imagens
+
+###
+
+### Upload de imagem (requer auth)
+POST {{baseUrl}}/api/imagens/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="arquivo"; filename="produto.jpg"
+Content-Type: image/jpeg
+
+< ./produto.jpg
+--boundary--
+
+### ================================================================
+### AVALIAÇÕES
+### ================================================================
+
+### Listar avaliações
+GET {{baseUrl}}/api/avaliacoes
+
+###
+
+### Criar avaliação (requer auth)
+POST {{baseUrl}}/api/avaliacoes
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "pontos": 5,
+  "comentario": "Ótima oferta! Produto de excelente qualidade.",
+  "ofertaId": 1,
+  "loginId": 1
+}
+
+### ================================================================
+### FAVORITOS (requer auth)
+### ================================================================
+
+### Listar favoritos
+GET {{baseUrl}}/api/favoritos
+Authorization: Bearer {{token}}
+
+###
+
+### Adicionar aos favoritos (requer auth)
+POST {{baseUrl}}/api/favoritos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "ofertaId": 1,
+  "loginId": 1,
+  "flagFavorito": true
+}
+
+###
+
+### Remover favorito (requer auth)
+DELETE {{baseUrl}}/api/favoritos/1
+Authorization: Bearer {{token}}
+
+### ================================================================
+### PESSOAS FÍSICAS (requer auth)
+### ================================================================
+
+### Listar pessoas físicas
+GET {{baseUrl}}/api/fisicas
+Authorization: Bearer {{token}}
+
+###
+
+### Cadastrar pessoa física (requer auth)
+POST {{baseUrl}}/api/fisicas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "cpf": "529.982.247-25",
+  "nomePessoa": "João da Silva",
+  "celular": "(11) 99999-0000",
+  "email": "joao@exemplo.com",
+  "loginId": 1
+}
+
+### ================================================================
+### EMPRESAS (requer auth)
+### ================================================================
+
+### Listar empresas
+GET {{baseUrl}}/api/juridicas
+Authorization: Bearer {{token}}
+
+###
+
+### Cadastrar empresa (requer auth)
+POST {{baseUrl}}/api/juridicas
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "cnpj": "11.222.333/0001-81",
+  "razaoSocial": "PeopleBuy Comércio Ltda",
+  "telefone": "(11) 3333-4444",
+  "celular": "(11) 99888-7777",
+  "email": "contato@peoplebuy.com.br",
+  "idLogin": 2,
+  "localizacaoId": 1
+}

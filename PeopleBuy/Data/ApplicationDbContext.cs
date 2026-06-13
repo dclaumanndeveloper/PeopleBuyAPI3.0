@@ -20,5 +20,6 @@ namespace PeopleBuy.Data
         public DbSet<PeopleBuy.Models.Imagem> Imagem { get; set; }
         public DbSet<PeopleBuy.Models.Oferta> Oferta { get; set; }
         public DbSet<PeopleBuy.Models.OfertaDiaria> OfertaDiaria { get; set; }
+        public DbSet<PeopleBuy.Models.Localizacao> Localizacao { get; set; }
     }
 }
